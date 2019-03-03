@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Histogram</title>
+</head>
+<body>
+    <canvas id="canvas" class="canvas" width="500" height="500"></canvas>
+    <canvas id="contrastCanvas" class="canvas" width="500" height="500"></canvas>
+    <button id="reverse">反色</button>
+    <button id="equal">均衡化</button>
+    <button id="stretch">灰度拉伸</button>
+    <div class="chart-body" id="chart" style="width: 900px;height:380px;padding-top: 0.2rem;"></div>
+    <script src="./js/jquery/dist/jquery.min.js"></script>
+    <script src="./js/eChart/echarts.min.js"></script>
+    <script src="./js/canvas.js"></script>
+    <script>
+        $(document).ready(function() {
+            // let imageUrl = './img/image1.jpg';
+            let imageUrl = 'https://www.pendoshscn.com/static/test/image1.jpg';
+            let Canvas   = new CanvasW('canvas', imageUrl, 'contrastCanvas');
+
+            Canvas.init(function() {
+                let imgData = Canvas.getImgData();
+                // console.log(imgData);
+
+                // 亮度数据
+                let brightHistogramData = Canvas.transBrightHistogramData(imgData);
+                // console.log(brightHistogramData);
+
+                // 绘制亮度直方图
+                drawChart(brightHistogramData);
+
+                // 反色
+                $("#reverse").off();
+                $("#reverse").on("click", function() {
+                    let reverseData = Canvas.reverse(imgData);
+
+                    // 亮度数据
+                    let brightHistogramData = Canvas.transBrightHistogramData(reverseData);
+                    console.log(brightHistogramData);
+
+                    // 绘制亮度直方图
+                    drawChart(brightHistogramData);
+                });
+
+                // 均衡化
+                $("#equal").off();
+                $("#equal").on("click", function() {
+                    let equalData = Canvas.equal(imgData);
+
+                    // 亮度数据
+                    let brightHistogramData = Canvas.transBrightHistogramData(equalData);
+                    console.log(brightHistogramData);
+
+                    // 绘制亮度直方图
+                    drawChart(brightHistogramData);
+                });
+
+                // 拉伸
+                $("#stretch").off();
+                $("#stretch").on("click", function() {
+                    let stretchData = Canvas.stretch(imgData);
+
+                    // 亮度数据
+                    let brightHistogramData = Canvas.transBrightHistogramData(stretchData);
+                    console.log(brightHistogramData);
+
+                    // 绘制亮度直方图
+                    drawChart(brightHistogramData);
+                });
+            });
+
+            function drawChart(chartData) {
+                let myChart = echarts.init(document.getElementById('chart'));
+
+                let chartOption = {
+                    xAxis: {
+                        data: chartData.label
+                    },
+                    yAxis: {
+                        type: 'value',
+                    },
+                    series: [{
+                        data: chartData.data,
+                        type: 'line',
+                        smooth: true,
+                    }],
+                };
+
+                myChart.setOption(chartOption);
+            }
+        });
+    </script>
+</body>
+</html>
